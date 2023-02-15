@@ -3,23 +3,31 @@ const mongoose = require('mongoose')
 const ImageModel = require("./models/imageModel")
 const userModel = require("./models/userModel")
 const bcrypt = require('bcryptjs')
+const cors = require('cors')
 
 const app = express()
 
+app.use(cors())
+
 app.use(express.json())
 mongoose.set("strictQuery",false)
+
 mongoose.connect('mongodb+srv://muteen:12345admin@cluster0.ejau5p7.mongodb.net/Twitter-API?retryWrites=true&w=majority')
-.then(()=> {
-    console.log('Mongoose running')
-    app.listen(3000, () => {
-        console.log("hello world")
-    })
-}).catch((error) => {
-    console.log(error)
-})
+.then(()=> console.log('Mongoose running'))
+.catch(error => console.log(error))
 
 app.get('/',(req,res) => {
-    res.send("Working")
+    res.status(200).json({
+        status: true,
+        message: "Welcome to backend"
+    })
+})
+
+app.get('/api/v1',(req,res) => {
+    res.status(200).json({
+        status: true,
+        message: "Welcome to backend"
+    })
 })
 
 app.get('/get',async(req,res) => {
@@ -147,9 +155,6 @@ app.post('/login',async(req,res) => {
     
 })
 
-
-
-
 app.put('/images_update/:id',async(req,res) => {
     try{
         const {id} = req.params;
@@ -169,9 +174,24 @@ app.put('/images_update/:id',async(req,res) => {
 })
 
 
+app.use("*", (req, res) => {
+    res.status(500).json({
+        status: false,
+        message: "API not found"
+    })
+})
 
+app.listen(3000, () => {
+    process.on("uncaughtException", (error) => {
+        console.log("Server: ", error.message)
+        process.exit(1)
+    })
 
-
+    process.on("unhandledRejection", (error) => {
+        console.log("Server: ", error.message)
+        process.exit(1)
+    })
+})
 
 
 
